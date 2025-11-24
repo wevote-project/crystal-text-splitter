@@ -239,7 +239,8 @@ crystal tool format
 
 ## Contributors
 
-- [Anthony Byrd](https://github.com/antarr) - creator and maintainer
+- [Antarr Byrd](https://github.com/antarr) - creator and maintainer
+- [Osama Saeed](https://github.com/alchemist-guy) - creator and maintainer
 
 ## License
 
