@@ -35,18 +35,3 @@ jobs:
 
     - name: Run Ameba linter
       run: ./bin/ameba
-
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Install Crystal
-      uses: crystal-lang/install-crystal@v1
-
-    - name: Install dependencies
-      run: shards install
-
-    - name: Build
-      run: shards build --error-trace

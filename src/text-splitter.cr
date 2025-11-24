@@ -29,8 +29,8 @@ require "./text-splitter/*"
 #
 # # Word-based splitting
 # word_splitter = Text::Splitter.new(
-#   chunk_size: 280,      # 280 words per chunk
-#   chunk_overlap: 50,    # 50 words overlap
+#   chunk_size: 280,   # 280 words per chunk
+#   chunk_overlap: 50, # 50 words overlap
 #   mode: :words
 # )
 #

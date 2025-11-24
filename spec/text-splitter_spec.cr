@@ -87,7 +87,7 @@ describe Text::Splitter do
       chunks = splitter.split_text(text)
 
       chunks.each do |chunk|
-        chunk.should match(/\.$/)  # Should end with period
+        chunk.should match(/\.$/) # Should end with period
       end
     end
 
@@ -114,7 +114,7 @@ describe Text::Splitter do
   describe "#split_text (word mode)" do
     it "splits by word count" do
       splitter = Text::Splitter.new(
-        chunk_size: 10,  # 10 words per chunk
+        chunk_size: 10, # 10 words per chunk
         chunk_overlap: 2,
         mode: Text::Splitter::ChunkMode::Words
       )
@@ -239,16 +239,16 @@ describe Text::Splitter do
       splitter = Text::Splitter.new(chunk_size: 500, chunk_overlap: 100)
 
       legal_text = "SECTION 1. SHORT TITLE.\n" \
-        "This Act may be cited as the \"Example Act of 2024\".\n\n" \
-        "SECTION 2. FINDINGS.\n" \
-        "Congress finds the following:\n" \
-        "(1) The first finding is here.\n" \
-        "(2) The second finding is here.\n" \
-        "(3) The third finding is here.\n\n" \
-        "SECTION 3. DEFINITIONS.\n" \
-        "In this Act:\n" \
-        "(1) TERM ONE - The definition is here.\n" \
-        "(2) TERM TWO - Another definition is here."
+                   "This Act may be cited as the \"Example Act of 2024\".\n\n" \
+                   "SECTION 2. FINDINGS.\n" \
+                   "Congress finds the following:\n" \
+                   "(1) The first finding is here.\n" \
+                   "(2) The second finding is here.\n" \
+                   "(3) The third finding is here.\n\n" \
+                   "SECTION 3. DEFINITIONS.\n" \
+                   "In this Act:\n" \
+                   "(1) TERM ONE - The definition is here.\n" \
+                   "(2) TERM TWO - Another definition is here."
 
       chunks = splitter.split_text(legal_text)
 
@@ -266,10 +266,10 @@ describe Text::Splitter do
       )
 
       blog_text = "Welcome to our blog! Today we're discussing text chunking for RAG applications.\n\n" \
-        "Text chunking is a crucial preprocessing step when building semantic search systems.\n" \
-        "By breaking documents into smaller, manageable pieces, we can create more precise embeddings.\n\n" \
-        "The key is finding the right balance between chunk size and overlap. Too small, and you lose context.\n" \
-        "Too large, and your embeddings become less specific. Experimentation is essential!"
+                  "Text chunking is a crucial preprocessing step when building semantic search systems.\n" \
+                  "By breaking documents into smaller, manageable pieces, we can create more precise embeddings.\n\n" \
+                  "The key is finding the right balance between chunk size and overlap. Too small, and you lose context.\n" \
+                  "Too large, and your embeddings become less specific. Experimentation is essential!"
 
       chunks = splitter.split_text(blog_text)
 
@@ -284,9 +284,9 @@ describe Text::Splitter do
       splitter = Text::Splitter.new(chunk_size: 300, chunk_overlap: 50)
 
       abstract_text = "Abstract: This study investigates the application of large language models (LLMs) in retrieval-augmented generation (RAG) systems.\n" \
-        "We propose a novel chunking strategy that preserves semantic coherence while optimizing for embedding quality.\n" \
-        "Our results demonstrate a 23% improvement in retrieval accuracy compared to baseline methods.\n" \
-        "The findings suggest that intelligent text preprocessing significantly impacts downstream task performance."
+                      "We propose a novel chunking strategy that preserves semantic coherence while optimizing for embedding quality.\n" \
+                      "Our results demonstrate a 23% improvement in retrieval accuracy compared to baseline methods.\n" \
+                      "The findings suggest that intelligent text preprocessing significantly impacts downstream task performance."
 
       chunks = splitter.split_text(abstract_text)
 

@@ -11,8 +11,8 @@ Finally, this last sentence completes our example document for word-based chunki
 TEXT
 
 splitter = Text::Splitter.new(
-  chunk_size: 15,      # 15 words per chunk
-  chunk_overlap: 5,    # 5 words overlap
+  chunk_size: 15,   # 15 words per chunk
+  chunk_overlap: 5, # 5 words overlap
   mode: Text::Splitter::ChunkMode::Words
 )
 
