@@ -150,7 +150,9 @@ module Text
               if combined_words.size > @chunk_size
                 # Save current chunk
                 chunks << current_chunk_words.join(" ") unless current_chunk_words.empty?
-                current_chunk_words = word_slice.to_a
+                # Get overlap words for next chunk
+                overlap_words = get_overlap_words(current_chunk_words)
+                current_chunk_words = overlap_words + word_slice.to_a
               else
                 current_chunk_words = combined_words
               end

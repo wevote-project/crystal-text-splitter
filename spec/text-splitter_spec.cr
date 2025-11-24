@@ -238,21 +238,17 @@ describe Text::Splitter do
     it "handles legal document text" do
       splitter = Text::Splitter.new(chunk_size: 500, chunk_overlap: 100)
 
-      legal_text = <<-TEXT
-        SECTION 1. SHORT TITLE.
-        This Act may be cited as the "Example Act of 2024".
-
-        SECTION 2. FINDINGS.
-        Congress finds the following:
-        (1) The first finding is here.
-        (2) The second finding is here.
-        (3) The third finding is here.
-
-        SECTION 3. DEFINITIONS.
-        In this Act:
-        (1) TERM ONE - The definition is here.
-        (2) TERM TWO - Another definition is here.
-      TEXT
+      legal_text = "SECTION 1. SHORT TITLE.\n" \
+        "This Act may be cited as the \"Example Act of 2024\".\n\n" \
+        "SECTION 2. FINDINGS.\n" \
+        "Congress finds the following:\n" \
+        "(1) The first finding is here.\n" \
+        "(2) The second finding is here.\n" \
+        "(3) The third finding is here.\n\n" \
+        "SECTION 3. DEFINITIONS.\n" \
+        "In this Act:\n" \
+        "(1) TERM ONE - The definition is here.\n" \
+        "(2) TERM TWO - Another definition is here."
 
       chunks = splitter.split_text(legal_text)
 
@@ -269,15 +265,11 @@ describe Text::Splitter do
         mode: Text::Splitter::ChunkMode::Words
       )
 
-      blog_text = <<-TEXT
-        Welcome to our blog! Today we're discussing text chunking for RAG applications.
-
-        Text chunking is a crucial preprocessing step when building semantic search systems.
-        By breaking documents into smaller, manageable pieces, we can create more precise embeddings.
-
-        The key is finding the right balance between chunk size and overlap. Too small, and you lose context.
-        Too large, and your embeddings become less specific. Experimentation is essential!
-      TEXT
+      blog_text = "Welcome to our blog! Today we're discussing text chunking for RAG applications.\n\n" \
+        "Text chunking is a crucial preprocessing step when building semantic search systems.\n" \
+        "By breaking documents into smaller, manageable pieces, we can create more precise embeddings.\n\n" \
+        "The key is finding the right balance between chunk size and overlap. Too small, and you lose context.\n" \
+        "Too large, and your embeddings become less specific. Experimentation is essential!"
 
       chunks = splitter.split_text(blog_text)
 
@@ -291,14 +283,12 @@ describe Text::Splitter do
     it "handles scientific paper abstract" do
       splitter = Text::Splitter.new(chunk_size: 300, chunk_overlap: 50)
 
-      abstract = <<-TEXT
-        Abstract: This study investigates the application of large language models (LLMs) in retrieval-augmented generation (RAG) systems.
-        We propose a novel chunking strategy that preserves semantic coherence while optimizing for embedding quality.
-        Our results demonstrate a 23% improvement in retrieval accuracy compared to baseline methods.
-        The findings suggest that intelligent text preprocessing significantly impacts downstream task performance.
-      TEXT
+      abstract_text = "Abstract: This study investigates the application of large language models (LLMs) in retrieval-augmented generation (RAG) systems.\n" \
+        "We propose a novel chunking strategy that preserves semantic coherence while optimizing for embedding quality.\n" \
+        "Our results demonstrate a 23% improvement in retrieval accuracy compared to baseline methods.\n" \
+        "The findings suggest that intelligent text preprocessing significantly impacts downstream task performance."
 
-      chunks = splitter.split_text(abstract)
+      chunks = splitter.split_text(abstract_text)
 
       chunks.should_not be_empty
     end

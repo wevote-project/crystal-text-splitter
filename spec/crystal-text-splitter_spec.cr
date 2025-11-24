@@ -1,9 +1,4 @@
 require "./spec_helper"
 
-describe Crystal::Text::Splitter do
-  # TODO: Write tests
-
-  it "works" do
-    false.should eq(true)
-  end
-end
+# Note: The actual implementation is in Text::Splitter (not Crystal::Text::Splitter)
+# See spec/text-splitter_spec.cr for the real tests
