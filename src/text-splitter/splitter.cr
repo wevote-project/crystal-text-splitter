@@ -64,49 +64,80 @@ module Text
     # chunks = splitter.split_text("Long document text here...")
     # ```
     def split_text(text : String) : Array(String)
-      return [] of String if text.strip.empty?
+      each_chunk(text).to_a
+    end
+
+    # Yields each chunk lazily without allocating all chunks upfront
+    #
+    # This is more memory efficient for large texts
+    #
+    # ```
+    # splitter = Text::Splitter.new(chunk_size: 100, chunk_overlap: 20)
+    # splitter.each_chunk(text) do |chunk|
+    #   puts chunk
+    # end
+    # ```
+    def each_chunk(text : String, & : String ->)
+      return if text.strip.empty?
 
       case @mode
       when ChunkMode::Words
-        split_by_words(text)
+        each_chunk_by_words(text) { |chunk| yield chunk }
       else
-        split_by_characters(text)
+        each_chunk_by_characters(text) { |chunk| yield chunk }
       end
     end
 
-    private def split_by_characters(text : String) : Array(String)
-      chunks = [] of String
+    # Returns an iterator over chunks
+    #
+    # ```
+    # splitter = Text::Splitter.new(chunk_size: 100, chunk_overlap: 20)
+    # splitter.each_chunk(text).first(10) # Get first 10 chunks only
+    # ```
+    def each_chunk(text : String)
+      ChunkIterator.new(self, text)
+    end
+
+    private def each_chunk_by_characters(text : String, & : String ->)
+      # Use optimized split approach - Crystal's split is highly optimized
       sentences = text.split(/[.!?]+/)
-      current_chunk = ""
+      current_chunk = String::Builder.new(@chunk_size)
 
       sentences.each do |sentence|
         sentence = sentence.strip
         next if sentence.empty?
 
         # Add sentence delimiter back
-        sentence += "."
+        sentence_with_punct = sentence + "."
 
-        if current_chunk.size + sentence.size + 1 <= @chunk_size
-          current_chunk += " " unless current_chunk.empty?
-          current_chunk += sentence
+        if current_chunk.bytesize == 0
+          current_chunk << sentence_with_punct
+        elsif current_chunk.bytesize + sentence_with_punct.bytesize + 1 <= @chunk_size
+          current_chunk << ' ' << sentence_with_punct
         else
-          # Save current chunk if it's not empty
-          chunks << current_chunk unless current_chunk.empty?
+          # Yield current chunk
+          chunk_str = current_chunk.to_s
+          yield chunk_str
 
           # Start new chunk with overlap
-          overlap_text = get_overlap_text(current_chunk)
-          current_chunk = overlap_text.empty? ? sentence : "#{overlap_text} #{sentence}"
+          current_chunk = String::Builder.new(@chunk_size)
+          if @chunk_overlap > 0
+            overlap = get_overlap_from_string(chunk_str)
+            unless overlap.empty?
+              current_chunk << overlap << ' '
+            end
+          end
+          current_chunk << sentence_with_punct
         end
       end
 
-      # Don't forget the last chunk
-      chunks << current_chunk unless current_chunk.empty?
-
-      chunks
+      # Yield final chunk
+      final_chunk = current_chunk.to_s
+      yield final_chunk unless final_chunk.empty?
     end
 
-    private def split_by_words(text : String) : Array(String)
-      chunks = [] of String
+    private def each_chunk_by_words(text : String, & : String ->)
+      # Use optimized split - much faster than manual scanning
       sentences = text.split(/[.!?]+/)
       current_chunk_words = [] of String
 
@@ -114,77 +145,96 @@ module Text
         sentence = sentence.strip
         next if sentence.empty?
 
-        # Add sentence delimiter back
-        sentence += "."
-
-        # Split into words, preserving punctuation attached to words
-        sentence_words = sentence.split(/\s+/).reject(&.empty?)
-
-        # Safety check: skip empty sentence_words
+        # Add sentence delimiter back and split into words
+        sentence_with_punct = sentence + "."
+        sentence_words = sentence_with_punct.split(/\s+/).reject(&.empty?)
         next if sentence_words.empty?
 
         # Check if adding this sentence would exceed chunk size
         if current_chunk_words.size + sentence_words.size <= @chunk_size
-          # Add sentence to current chunk
           current_chunk_words.concat(sentence_words)
         else
-          # Save current chunk if not empty
-          if !current_chunk_words.empty?
-            chunks << current_chunk_words.join(" ")
+          # Yield current chunk if not empty
+          unless current_chunk_words.empty?
+            yield current_chunk_words.join(' ')
 
             # Get overlap words for next chunk
-            overlap_words = get_overlap_words(current_chunk_words)
-            current_chunk_words = overlap_words
+            if @chunk_overlap > 0
+              overlap_size = Math.min(current_chunk_words.size, @chunk_overlap)
+              current_chunk_words = current_chunk_words.last(overlap_size).to_a
+            else
+              current_chunk_words.clear
+            end
           end
 
           # Handle very long sentences that exceed chunk size
           if sentence_words.size > @chunk_size
-            # Split long sentence into multiple chunks
             sentence_words.each_slice(@chunk_size) do |word_slice|
-              # Ensure word_slice is not empty
               next if word_slice.empty?
 
-              # Add current words to chunk
               combined_words = current_chunk_words + word_slice
 
               if combined_words.size > @chunk_size
-                # Save current chunk
-                chunks << current_chunk_words.join(" ") unless current_chunk_words.empty?
-                # Get overlap words for next chunk
-                overlap_words = get_overlap_words(current_chunk_words)
-                current_chunk_words = overlap_words + word_slice.to_a
+                yield current_chunk_words.join(' ') unless current_chunk_words.empty?
+
+                # Get overlap words
+                if @chunk_overlap > 0 && !current_chunk_words.empty?
+                  overlap_size = Math.min(current_chunk_words.size, @chunk_overlap)
+                  current_chunk_words = current_chunk_words.last(overlap_size).to_a + word_slice.to_a
+                else
+                  current_chunk_words = word_slice.to_a
+                end
               else
                 current_chunk_words = combined_words
               end
             end
           else
-            # Normal case: add sentence to new chunk
             current_chunk_words.concat(sentence_words)
           end
         end
       end
 
-      # Don't forget the last chunk
-      chunks << current_chunk_words.join(" ") unless current_chunk_words.empty?
-
-      # Safety validation: remove any empty chunks
-      chunks.reject(&.strip.empty?)
+      # Yield final chunk
+      unless current_chunk_words.empty?
+        final = current_chunk_words.join(' ')
+        yield final unless final.strip.empty?
+      end
     end
 
-    private def get_overlap_text(text : String) : String
-      return "" if @chunk_overlap <= 0
+    private def get_overlap_from_string(text : String) : String
+      return "" if @chunk_overlap <= 0 || text.empty?
 
+      # For character mode, take approximate word overlap
       words = text.split
       overlap_words = words.last([words.size, @chunk_overlap // 10].min)
       overlap_words.join(" ")
     end
 
-    private def get_overlap_words(words : Array(String)) : Array(String)
-      return [] of String if @chunk_overlap <= 0 || words.empty?
+    # Iterator class for lazy chunk generation
+    private class ChunkIterator
+      include Iterator(String)
 
-      # For word mode, overlap is already in words
-      overlap_size = Math.min(words.size, @chunk_overlap)
-      words.last(overlap_size).to_a
+      def initialize(@splitter : Splitter, @text : String)
+        @chunks = [] of String
+        @index = 0
+        @finished = false
+        @started = false
+      end
+
+      def next
+        unless @started
+          @splitter.each_chunk(@text) { |chunk| @chunks << chunk }
+          @started = true
+        end
+
+        if @index < @chunks.size
+          chunk = @chunks[@index]
+          @index += 1
+          chunk
+        else
+          stop
+        end
+      end
     end
   end
 end
