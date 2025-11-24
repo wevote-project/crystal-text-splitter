@@ -29,8 +29,8 @@ TEXT
 
 # Configure splitter for optimal RAG chunking
 splitter = Text::Splitter.new(
-  chunk_size: 200,     # Reasonable size for embeddings
-  chunk_overlap: 40,   # Preserve context
+  chunk_size: 200,   # Reasonable size for embeddings
+  chunk_overlap: 40, # Preserve context
   mode: Text::Splitter::ChunkMode::Characters
 )
 
