@@ -1,8 +1,8 @@
 # Text::Splitter
 
-[![CI](https://github.com/wevote-project/text-splitter/actions/workflows/ci.yml/badge.svg)](https://github.com/wevote-project/text-splitter/actions/workflows/ci.yml)
-[![GitHub release](https://img.shields.io/github/release/wevote-project/text-splitter.svg)](https://github.com/wevote-project/text-splitter/releases)
-[![License](https://img.shields.io/github/license/wevote-project/text-splitter.svg)](https://github.com/wevote-project/text-splitter/blob/main/LICENSE)
+[![CI](https://github.com/wevote-project/crystal-text-splitter/actions/workflows/ci.yml/badge.svg)](https://github.com/wevote-project/crystal-text-splitter/actions/workflows/ci.yml)
+[![GitHub release](https://img.shields.io/github/release/wevote-project/crystal-text-splitter.svg)](https://github.com/wevote-project/crystal-text-splitter/releases)
+[![License](https://img.shields.io/github/license/wevote-project/crystal-text-splitter.svg)](https://github.com/wevote-project/crystal-text-splitter/blob/main/LICENSE)
 
 **Intelligent text chunking for RAG (Retrieval-Augmented Generation) and LLM applications in Crystal.**
 
@@ -24,7 +24,7 @@ Text::Splitter provides flexible, production-tested text chunking with configura
 ```yaml
 dependencies:
   text-splitter:
-    github: wevote-project/text-splitter
+    github: wevote-project/crystal-text-splitter
     version: ~> 0.1.0
 ```
 
