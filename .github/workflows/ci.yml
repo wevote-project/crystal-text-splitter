@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        crystal: [latest, nightly]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Crystal
+      uses: crystal-lang/install-crystal@v1
+      with:
+        crystal: ${{ matrix.crystal }}
+
+    - name: Install dependencies
+      run: shards install
+
+    - name: Run specs
+      run: crystal spec --error-trace
+
+    - name: Check formatting
+      run: crystal tool format --check
+
+    - name: Run Ameba linter
+      run: ./bin/ameba
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Crystal
+      uses: crystal-lang/install-crystal@v1
+
+    - name: Install dependencies
+      run: shards install
+
+    - name: Build
+      run: shards build --error-trace

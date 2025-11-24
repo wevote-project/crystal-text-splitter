@@ -1,0 +1,21 @@
+name: text-splitter
+version: 0.1.0
+
+authors:
+  - Antarr Byrd <antarr@wvoteproject.org>
+  - Osama Saeed <osama.engrg@gmail.com>
+
+crystal: ">= 1.0.0"
+
+license: MIT
+
+description: |
+  Intelligent text chunking for RAG (Retrieval-Augmented Generation) and LLM applications.
+  Supports character-based and word-based splitting with configurable overlap for context preservation.
+
+repository: https://github.com/wevote-project/text-splitter
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+    version: ~> 1.6
