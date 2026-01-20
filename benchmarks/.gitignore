@@ -3,3 +3,5 @@
 
 # Keep documentation and results
 !README.md
+!*.md
+!.gitignore
