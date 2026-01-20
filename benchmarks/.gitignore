@@ -1,0 +1,7 @@
+# Ignore benchmark code files - these are for local performance testing
+*.cr
+
+# Keep documentation and results
+!README.md
+!*.md
+!.gitignore
