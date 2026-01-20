@@ -71,7 +71,7 @@ Tested with 10,000 sentences, 100 iterations for memory measurement
 
 | Metric | OLD (intermediate var) | NEW (inline string) | Improvement |
 |--------|------------------------|---------------------|-------------|
-| Time | 2.94 ms | 2.99 ms | ~same (0.98x) |
+| Time | 2.94 ms | 2.99 ms | negligible (1.02x slower) |
 | Memory | 640.75 MB | 640.74 MB | ~same (0.0%) |
 
 **Result**: No significant change. The compiler optimizes both patterns similarly since we need to create the full string for splitting anyway.
