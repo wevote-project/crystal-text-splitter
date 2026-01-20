@@ -219,7 +219,6 @@ module Text
       count = 0
       in_word = false
       start_index = 0
-      found_limit = false
 
       while reader.has_previous?
         char = reader.previous_char
@@ -229,7 +228,6 @@ module Text
             count += 1
             if count >= limit
               start_index = reader.pos + char.bytesize
-              found_limit = true
               break
             end
             in_word = false
