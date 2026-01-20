@@ -13,7 +13,7 @@ def generate_document(word_count : Int32) : String
     "Transformer architectures revolutionized natural language understanding.",
     "Attention mechanisms allow models to focus on relevant information.",
     "Fine-tuning adapts pre-trained models to specific domains.",
-    "Large language models demonstrate emergent capabilities at scale."
+    "Large language models demonstrate emergent capabilities at scale.",
   ]
 
   words_needed = word_count
@@ -53,12 +53,12 @@ configs.each do |config|
     mode: Text::Splitter::ChunkMode::Characters
   )
 
-  chunks = nil
+  chunks = splitter.split_text(doc)
   time = Benchmark.realtime do
-    chunks = splitter.split_text(doc)
+    splitter.split_text(doc)
   end
 
-  puts "Character mode: #{chunks.not_nil!.size} chunks in #{(time.total_milliseconds).round(2)}ms"
+  puts "Character mode: #{chunks.size} chunks in #{(time.total_milliseconds).round(2)}ms"
 
   memory = Benchmark.memory do
     100.times { splitter.split_text(doc) }
@@ -67,17 +67,17 @@ configs.each do |config|
 
   # Benchmark word-based splitting
   word_splitter = Text::Splitter.new(
-    chunk_size: config[:chunk] // 5,  # Approximate word count
+    chunk_size: config[:chunk] // 5, # Approximate word count
     chunk_overlap: config[:overlap] // 5,
     mode: Text::Splitter::ChunkMode::Words
   )
 
-  word_chunks = nil
+  word_chunks = word_splitter.split_text(doc)
   word_time = Benchmark.realtime do
-    word_chunks = word_splitter.split_text(doc)
+    word_splitter.split_text(doc)
   end
 
-  puts "Word mode: #{word_chunks.not_nil!.size} chunks in #{(word_time.total_milliseconds).round(2)}ms"
+  puts "Word mode: #{word_chunks.size} chunks in #{(word_time.total_milliseconds).round(2)}ms"
 
   word_memory = Benchmark.memory do
     100.times { word_splitter.split_text(doc) }

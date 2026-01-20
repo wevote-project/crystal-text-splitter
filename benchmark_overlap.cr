@@ -65,7 +65,7 @@ puts "=" * 60
 
 # Test with different text sizes
 text_sizes = [100, 500, 1000, 5000, 10000]
-chunk_overlap = 200  # This gives us limit = 20 words
+chunk_overlap = 200 # This gives us limit = 20 words
 
 text_sizes.each do |size|
   text = generate_text(size)
