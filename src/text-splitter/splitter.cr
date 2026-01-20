@@ -204,10 +204,49 @@ module Text
     private def get_overlap_from_string(text : String) : String
       return "" if @chunk_overlap <= 0 || text.empty?
 
-      # For character mode, take approximate word overlap
-      words = text.split
-      overlap_words = words.last([words.size, @chunk_overlap // 10].min)
-      overlap_words.join(" ")
+      limit = @chunk_overlap // 10
+      return "" if limit == 0
+
+      # Optimized: scan from end to find last `limit` words
+      # instead of allocating array for all words
+      reader = Char::Reader.new(text)
+
+      # Fast forward to end
+      while reader.has_next?
+        reader.next_char
+      end
+
+      count = 0
+      in_word = false
+      start_index = 0
+      found_limit = false
+
+      while reader.has_previous?
+        char = reader.previous_char
+
+        if char.whitespace?
+          if in_word
+            count += 1
+            if count >= limit
+              start_index = reader.pos + char.bytesize
+              found_limit = true
+              break
+            end
+            in_word = false
+          end
+        else
+          in_word = true
+        end
+      end
+
+      # If we stopped because we hit the beginning of the string while in a word,
+      # that counts as a word, but start_index is already 0.
+
+      # Use byte_slice to avoid encoding issues with indices
+      overlap_text = text.byte_slice(start_index)
+
+      # Normalize whitespace and join
+      overlap_text.split.join(" ")
     end
 
     # Iterator class for lazy chunk generation
