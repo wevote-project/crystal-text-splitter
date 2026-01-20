@@ -107,13 +107,10 @@ module Text
         sentence = sentence.strip
         next if sentence.empty?
 
-        # Add sentence delimiter back
-        sentence_with_punct = sentence + "."
-
         if current_chunk.bytesize == 0
-          current_chunk << sentence_with_punct
-        elsif current_chunk.bytesize + sentence_with_punct.bytesize + 1 <= @chunk_size
-          current_chunk << ' ' << sentence_with_punct
+          current_chunk << sentence << '.'
+        elsif current_chunk.bytesize + sentence.bytesize + 2 <= @chunk_size
+          current_chunk << ' ' << sentence << '.'
         else
           # Yield current chunk
           chunk_str = current_chunk.to_s
@@ -127,7 +124,7 @@ module Text
               current_chunk << overlap << ' '
             end
           end
-          current_chunk << sentence_with_punct
+          current_chunk << sentence << '.'
         end
       end
 
@@ -145,9 +142,7 @@ module Text
         sentence = sentence.strip
         next if sentence.empty?
 
-        # Add sentence delimiter back and split into words
-        sentence_with_punct = sentence + "."
-        sentence_words = sentence_with_punct.split(/\s+/).reject(&.empty?)
+        sentence_words = "#{sentence}.".split(/\s+/).reject(&.empty?)
         next if sentence_words.empty?
 
         # Check if adding this sentence would exceed chunk size
