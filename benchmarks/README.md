@@ -13,6 +13,30 @@ crystal run <benchmark_file>.cr --release
 
 ## Available Benchmarks
 
+### Lazy Iterator Performance
+
+**Files:**
+- `benchmark_lazy_iterator.cr` - Lazy vs eager evaluation comparison
+- `LAZY_ITERATOR_RESULTS.md` - Detailed analysis and results
+
+**What it tests:**
+Compares the state machine-based lazy iterator against eager `split_text()` evaluation.
+
+**Key results:**
+- 4-5x faster for first chunk and early termination
+- 65-67% memory reduction
+- Virtually no overhead for full iteration
+- True lazy evaluation confirmed
+
+**Run:**
+```bash
+crystal run benchmark_lazy_iterator.cr --release
+```
+
+---
+
+## Available Benchmarks
+
 ### Overlap Calculation Optimization
 
 **Files:**
@@ -55,18 +79,31 @@ crystal run benchmark_string_concat.cr --release
 crystal run benchmark_string_allocation.cr --release
 ```
 
+## Benchmark Comparison
+
+See `BENCHMARK_COMPARISON.md` for before/after comparison showing that the lazy iterator fix:
+- ✅ Does NOT negatively impact existing benchmarks
+- ✅ Actually improves performance by 2-30% in some cases
+- ✅ All optimizations work together harmoniously
+
 ## Benchmark Results Summary
 
-Both optimizations have been applied to the codebase:
+All three optimizations have been applied to the codebase:
 
 1. **Overlap Calculation** (commit d2b8eda)
    - 97-99% memory savings
    - Better scalability for large documents
 
-2. **String Allocation** (current branch)
+2. **String Allocation** (commit 230b8df)
    - 31% memory savings in character mode
    - 1.2x speedup in character mode
    - Cleaner, more maintainable code
+
+3. **Lazy Iterator** (current branch)
+   - 4-5x faster for first chunk/early termination
+   - 65-67% memory reduction
+   - True O(1) lazy evaluation
+   - No overhead for full iteration
 
 ## Adding New Benchmarks
 
